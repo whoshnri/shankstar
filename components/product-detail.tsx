@@ -85,7 +85,8 @@ export function ProductDetail({ product, recommendations }: ProductDetailProps) 
     setIsAddingToCart(true);
     setTimeout(() => {
       addItem({
-        variantId: selectedVariant.id === 'base' ? product.id : selectedVariant.id,
+        productId: product.id,
+        variantId: selectedVariant.id === 'base' ? undefined : selectedVariant.id,
         quantity,
         price: selectedVariant.price,
         name: selectedVariant.id === 'base' ? product.name : `${product.name} - ${selectedVariant.name}`,

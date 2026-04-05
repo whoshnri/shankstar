@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition, useEffect, useMemo, useCallback } from 'react';
+import { useState, useTransition, useEffect, useMemo, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCart } from '@/lib/cart-context';
 import { useToast } from '@/lib/toast-context';
@@ -58,17 +58,22 @@ const decodeState = (encoded: string) => {
   }
 };
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { items, cartTotal, clearCart } = useCart();
   const { addToast } = useToast();
   
+  const [mounted, setMounted] = useState(false);
   const [step, setStep] = useState(1);
   const [customerId, setCustomerId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
   const [cardType, setCardType] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const detectCardType = (number: string) => {
     if (number.startsWith('4')) return 'Visa';
@@ -143,6 +148,7 @@ export default function CheckoutPage() {
           await new Promise(r => setTimeout(r, 1000));
 
           const cartItems = items.map((item) => ({
+            productId: item.productId,
             variantId: item.variantId,
             quantity: item.quantity,
             price: item.price,
@@ -156,10 +162,12 @@ export default function CheckoutPage() {
           
           clearCart();
           router.push(`/orders/confirmation?order=${order.orderNumber}`);
-        } catch (err) {
+        } catch (err: any) {
           setPaymentStatus(null);
           if (err instanceof InsufficientStockError) {
             addToast('Item no longer available in requested quantity', 'error');
+          } else if (err.code === 'P2028' || err.message?.includes('P2028')) {
+            addToast('The system is currently busy. Please try again in a moment.', 'error');
           } else {
             addToast(err instanceof Error ? err.message : 'Failed to place order', 'error');
           }
@@ -171,6 +179,18 @@ export default function CheckoutPage() {
   const shippingCost = cartTotal > FREE_SHIPPING_THRESHOLD ? 0 : FLAT_SHIPPING;
   const tax = cartTotal * TAX_RATE;
   const orderTotal = cartTotal + shippingCost + tax;
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <Header categories={[]} />
+        <div className="flex-1 flex items-center justify-center">
+           <div className="w-12 h-12 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -334,7 +354,7 @@ export default function CheckoutPage() {
                       type="button"
                       variant="outline"
                       onClick={() => setStep(step - 1)}
-                      className="flex-1 py-7 border-border text-xs  uppercase tracking-widest rounded-none hover:bg-secondary"
+                      className="flex-1 py-7 border-border text-xs hover:text-black  uppercase tracking-widest rounded-none hover:bg-secondary"
                     >
                       Back
                     </Button>
@@ -451,3 +471,19 @@ export default function CheckoutPage() {
     </div>
   );
 }
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="w-12 h-12 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Loading Checkout...</p>
+        </div>
+      </div>
+    }>
+      <CheckoutContent />
+    </Suspense>
+  );
+}
+

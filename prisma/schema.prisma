@@ -70,6 +70,7 @@ model Product {
   category    Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   variants    ProductVariant[]
+  orderItems  OrderItem[]
   images      String[]
 
   @@map("products")
@@ -123,7 +124,7 @@ model Customer {
   firstName String
   lastName  String
   email     String   @unique
-  phone     String   @unique
+  phone     String?
   address   String?
   city      String?
   state     String?
@@ -166,8 +167,11 @@ model OrderItem {
   orderId     String
   order       Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  variantId   String
-  variant     ProductVariant @relation(fields: [variantId], references: [id])
+  productId   String
+  product     Product     @relation(fields: [productId], references: [id])
+
+  variantId   String?
+  variant     ProductVariant? @relation(fields: [variantId], references: [id])
 
   @@map("order_items")
 }

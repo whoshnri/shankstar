@@ -20,20 +20,44 @@ export async function createOrder(data: CreateOrderInput) {
   const { customerId, items, couponCode } = parsed.data
 
   return prisma.$transaction(async (tx) => {
-    // Check stock for all variants
+    // 1. Collect all IDs for batch lookup
+    const variantIds = items.filter(i => i.variantId).map(i => i.variantId as string);
+    const productIds = items.map(i => i.productId);
+
+    // 2. Fetch variants and products in parallel
+    const [variants, products] = await Promise.all([
+      tx.productVariant.findMany({
+        where: { id: { in: variantIds } },
+        select: { id: true, stock: true, name: true },
+      }),
+      tx.product.findMany({
+        where: { id: { in: productIds } },
+        select: { id: true, stock: true, name: true },
+      }),
+    ]);
+
+    const variantMap = new Map(variants.map((v) => [v.id, v]));
+    const productMap = new Map(products.map((p) => [p.id, p]));
+
+    // 3. Stock Checks
     for (const item of items) {
-      const variant = await tx.productVariant.findUnique({
-        where: { id: item.variantId },
-      })
-      if (!variant || variant.stock < item.quantity) {
-        throw new InsufficientStockError(item.variantId)
+      if (item.variantId) {
+        const variant = variantMap.get(item.variantId);
+        if (!variant || variant.stock < item.quantity) {
+          throw new InsufficientStockError(variant?.name || 'Unknown Variant');
+        }
+      } else {
+        const product = productMap.get(item.productId);
+        if (!product || product.stock < item.quantity) {
+          throw new InsufficientStockError(product?.name || 'Default Product');
+        }
       }
     }
 
-    // Calculate subtotal
+    // 4. Calculate subtotal
     const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
-    // Apply coupon if provided
+    // 5. Apply coupon if provided
     let discount = 0
     if (couponCode) {
       const validCoupon = await tx.coupon.findFirst({
@@ -63,7 +87,7 @@ export async function createOrder(data: CreateOrderInput) {
     const total = subtotal + tax + shippingCost - discount
     const orderNumber = `ORD-${Date.now()}`
 
-    // Create order with items
+    // 6. Create order with items
     const order = await tx.order.create({
       data: {
         orderNumber,
@@ -77,7 +101,8 @@ export async function createOrder(data: CreateOrderInput) {
         items: {
           createMany: {
             data: items.map((item) => ({
-              variantId: item.variantId,
+              productId: item.productId,
+              variantId: item.variantId || null,
               quantity: item.quantity,
               price: item.price,
             })),
@@ -90,15 +115,25 @@ export async function createOrder(data: CreateOrderInput) {
       },
     })
 
-    // Decrement stock for each variant
+    // 7. Decrement stock (Independent logic)
     for (const item of items) {
-      await tx.productVariant.update({
-        where: { id: item.variantId },
-        data: { stock: { decrement: item.quantity } },
-      })
+      if (item.variantId) {
+        await tx.productVariant.update({
+          where: { id: item.variantId },
+          data: { stock: { decrement: item.quantity } },
+        });
+      } else {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: { stock: { decrement: item.quantity } },
+        });
+      }
     }
 
     return order
+  }, {
+    maxWait: 10000,
+    timeout: 15000,
   })
 }
 
@@ -108,11 +143,8 @@ export async function getOrderByNumber(orderNumber: string) {
     include: {
       items: {
         include: {
-          variant: {
-            include: {
-              product: true,
-            },
-          },
+          product: true,
+          variant: true,
         },
       },
       customer: true,

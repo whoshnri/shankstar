@@ -52,7 +52,7 @@ export function CartSheet({ isOpen, onClose }: CartSheetProps) {
           <div className="space-y-6">
             {items.map((item) => (
               <div
-                key={item.variantId}
+                key={item.productId + (item.variantId || '')}
                 className="flex gap-4 pb-6 border-b border-border"
               >
                 <div className="relative w-20 h-20 bg-secondary rounded-sm overflow-hidden shrink-0">
@@ -73,7 +73,7 @@ export function CartSheet({ isOpen, onClose }: CartSheetProps) {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() =>
-                        updateQuantity(item.variantId, Math.max(1, item.quantity - 1))
+                        updateQuantity(item.productId, item.variantId, Math.max(1, item.quantity - 1))
                       }
                       className="p-1 hover:bg-secondary rounded-sm transition-colors"
                     >
@@ -82,14 +82,14 @@ export function CartSheet({ isOpen, onClose }: CartSheetProps) {
                     <span className="w-6 text-center text-sm">{item.quantity}</span>
                     <button
                       onClick={() =>
-                        updateQuantity(item.variantId, item.quantity + 1)
+                        updateQuantity(item.productId, item.variantId, item.quantity + 1)
                       }
                       className="p-1 hover:bg-secondary rounded-sm transition-colors"
                     >
                       <Plus size={14} />
                     </button>
                     <button
-                      onClick={() => removeItem(item.variantId)}
+                      onClick={() => removeItem(item.productId, item.variantId)}
                       className="ml-auto p-1 hover:bg-red-50 rounded-sm transition-colors text-red-600"
                     >
                       <X size={14} />
@@ -128,7 +128,7 @@ export function CartSheet({ isOpen, onClose }: CartSheetProps) {
             <Button
               variant="outline"
               onClick={onClose}
-              className="w-full py-6 border-border text-xs  uppercase tracking-widest rounded-none hover:bg-secondary transition-all"
+              className="w-full py-6 border-border text-xs hover:text-black  uppercase tracking-widest rounded-none hover:bg-secondary transition-all"
             >
               Continue Shopping
             </Button>

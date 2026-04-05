@@ -20,7 +20,7 @@ export async function upsertCustomer(data: CustomerInput) {
 
   const existing = await prisma.customer.findFirst({
     where: {
-      OR: [{ email: normEmail }, { phone: normPhone }],
+      OR: [{ email: normEmail }],
     },
   })
 

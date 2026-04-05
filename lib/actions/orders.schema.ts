@@ -5,8 +5,8 @@ export const FREE_SHIPPING_THRESHOLD = 500000
 export const FLAT_SHIPPING = 15000
 
 export class InsufficientStockError extends Error {
-  constructor(public variantId: string) {
-    super(`Insufficient stock for variant: ${variantId}`)
+  constructor(public identifier: string) {
+    super(`Insufficient stock for: ${identifier}`)
     this.name = "InsufficientStockError"
   }
 }
@@ -15,7 +15,8 @@ export const CreateOrderInputSchema = z.object({
   customerId: z.string(),
   items: z.array(
     z.object({
-      variantId: z.string(),
+      productId: z.string(),
+      variantId: z.string().optional(),
       quantity: z.number().int().positive(),
       price: z.number(),
     })
