@@ -152,7 +152,7 @@ export function CartSheet({ isOpen, onClose }: CartSheetProps) {
     return (
       <Drawer open={isOpen} onOpenChange={handleOpenChange}>
         <DrawerContent className="flex flex-col max-h-[92dvh] p-0 gap-0">
-          <DrawerHeader className="shrink-0 px-4 pt-3 pb-2 border-b border-border text-left">
+          <DrawerHeader className="shrink-0 px-4 py-4 border-b border-border text-left">
             <DrawerTitle className="text-base font-light flex items-center justify-between">
               <span>Your Cart</span>
               {items.length > 0 && (
