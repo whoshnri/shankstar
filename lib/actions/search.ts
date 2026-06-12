@@ -43,7 +43,7 @@ export async function searchProducts(query: string) {
               : {}),
           },
           include: { category: true },
-          take: 8,
+          take: 9,
         }),
       [],
     );

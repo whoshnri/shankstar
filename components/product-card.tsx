@@ -24,7 +24,7 @@ export function ProductCard({ product }: ProductCardProps) {
             alt={product.name}
             fill
             className="object-cover group-hover:opacity-90 transition-opacity duration-300 ease-out"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+            sizes="(max-width: 768px) 33vw, (max-width: 1200px) 33vw, 25vw"
           />
         </div>
       </div>

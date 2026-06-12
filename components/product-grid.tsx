@@ -13,17 +13,8 @@ interface ProductGridProps {
   initialFailed?: boolean;
 }
 
-function getProductGridClasses(count: number): string {
-  if (count <= 4) {
-    return 'grid-cols-2 grid-rows-2 auto-rows-fr';
-  }
-  if (count <= 6) {
-    return 'grid-cols-2';
-  }
-  if (count <= 9) {
-    return 'grid-cols-2 md:grid-cols-3 lg:grid-cols-3';
-  }
-  return 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4';
+function getProductGridClasses(): string {
+  return 'grid-cols-3 lg:grid-cols-4';
 }
 
 export function ProductGrid({ initialProducts, initialFailed = false }: ProductGridProps) {
@@ -75,7 +66,7 @@ export function ProductGrid({ initialProducts, initialFailed = false }: ProductG
     <div className="space-y-4">
       {products.length > 0 ? (
         <>
-          <div className={cn('grid gap-1', getProductGridClasses(products.length))}>
+          <div className={cn('grid gap-1', getProductGridClasses())}>
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

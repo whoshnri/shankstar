@@ -23,7 +23,7 @@ export function Header({ categories = [], categoriesFailed = false }: HeaderProp
   return (
     <>
       <header className="border-b border-border bg-background">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-6">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-6">
           {/* Desktop Header */}
           <div className="hidden md:flex items-center justify-between gap-12">
             <Link href="/" className="text-2xl font-light tracking-wide hover:opacity-60 transition-opacity">
@@ -63,28 +63,28 @@ export function Header({ categories = [], categoriesFailed = false }: HeaderProp
           </div>
 
           {/* Mobile Header */}
-          <div className="md:hidden flex items-center justify-between">
+          <div className="md:hidden flex items-center justify-between min-h-10">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="hover:opacity-60 transition-opacity"
+              className="hover:opacity-60 transition-opacity p-1 -ml-1"
               aria-label="Menu"
             >
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
 
-            <Link href="/" className="text-xl font-light tracking-wide hover:opacity-60 transition-opacity">
+            <Link href="/" className="text-lg font-light tracking-wide hover:opacity-60 transition-opacity">
               SUPERVILLAIN
             </Link>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => setIsCartOpen(true)}
-                className="relative hover:opacity-60 transition-opacity"
+                className="relative hover:opacity-60 transition-opacity p-1 -mr-1"
                 aria-label="Shopping cart"
               >
-                <ShoppingBag size={24} />
+                <ShoppingBag size={20} />
                 {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs font-medium w-5 h-5 rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[10px] font-medium w-4 h-4 rounded-full flex items-center justify-center">
                     {cartCount}
                   </span>
                 )}

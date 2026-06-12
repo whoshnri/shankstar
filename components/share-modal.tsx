@@ -60,7 +60,7 @@ export default function ShareModal({ slug }: { slug: string }) {
 
   return (
     <Dialog>
-      <DialogTrigger className="p-4 border hover:bg-gray-300/50">
+      <DialogTrigger className="p-1 md:p-4 border hover:bg-gray-300/50">
         <Share2 />
       </DialogTrigger>
       <DialogContent className="rounded-none">

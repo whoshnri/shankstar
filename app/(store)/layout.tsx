@@ -1,6 +1,5 @@
 import { Header } from '@/components/header';
 import { Sidebar } from '@/components/sidebar';
-import { Footer } from '@/components/footer';
 import { getCategories } from '@/lib/actions/products';
 
 export default async function StoreLayout({
@@ -25,10 +24,6 @@ export default async function StoreLayout({
       <main className="flex-1 min-w-0 md:ml-64 p-1 h-full relative md:p-2">
         {children}
       </main>
-
-      <div className="md:hidden">
-        <Footer />
-      </div>
     </div>
   );
 }

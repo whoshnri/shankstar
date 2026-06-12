@@ -55,7 +55,7 @@ export default async function Page({
   if (!product) notFound();
 
   const [recommendations, adjacent] = await Promise.all([
-    getRecommendations(product.id, 4),
+    getRecommendations(product.id, 9),
     getAdjacentProducts(product.id, product.categoryId),
   ]);
 

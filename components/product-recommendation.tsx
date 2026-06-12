@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { formatPrice } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 
 export interface RecommendedProduct {
   id: string;
@@ -15,37 +15,44 @@ export interface RecommendedProduct {
 interface ProductRecommendationProps {
   products: RecommendedProduct[];
   title?: string;
+  className?: string;
+  onItemClick?: () => void;
 }
 
-export function ProductRecommendation({ products, title = 'You might also like' }: ProductRecommendationProps) {
-  if (products.length === 0) return null;
+export function ProductRecommendation({
+  products,
+  title = 'You might also like',
+  className,
+  onItemClick,
+}: ProductRecommendationProps) {
+  const items = products.slice(0, 9);
+
+  if (items.length === 0) return null;
 
   return (
-    <section className="py-12 border-t border-border">
-      <h2 className="text-2xl font-light mb-8 text-foreground">{title}</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {products.map((product) => (
+    <section className={cn('py-8 border-t border-border', className)}>
+      {title ? (
+        <h2 className="text-sm uppercase tracking-widest text-muted-foreground mb-4">
+          {title}
+        </h2>
+      ) : null}
+      <div className="grid grid-cols-3 gap-1">
+        {items.map((product) => (
           <Link
             key={product.id}
             href={`/${product.slug}`}
+            onClick={onItemClick}
             className="group"
           >
-            <div className="relative overflow-hidden bg-secondary mb-4 hover-lift">
-              <div className="aspect-square relative">
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-all duration-500 ease-out"
-                />
-              </div>
+            <div className="relative overflow-hidden bg-secondary aspect-square">
+              <Image
+                src={product.image}
+                alt={product.name}
+                fill
+                className="object-cover group-hover:opacity-90 transition-opacity duration-300"
+                sizes="33vw"
+              />
             </div>
-            <h3 className="text-sm font-medium text-foreground mb-1 group-hover:text-primary transition-colors">
-              {product.name}
-            </h3>
-            <p className="text-sm font-light text-foreground">
-              {formatPrice(product.basePrice)}
-            </p>
           </Link>
         ))}
       </div>
