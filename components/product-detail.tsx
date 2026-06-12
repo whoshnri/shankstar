@@ -62,7 +62,7 @@ function ProductImageCarousel({
 }) {
   return (
     <div className={cn("relative group w-full", className)}>
-      <div className="aspect-square relative bg-secondary overflow-hidden w-full">
+      <div className="aspect-square mt-20 md:mt-0 relative bg-secondary overflow-hidden w-full">
         <Image
           src={displayImages[currentImageIndex]}
           alt={productName}
