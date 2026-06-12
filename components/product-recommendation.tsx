@@ -30,7 +30,7 @@ export function ProductRecommendation({
   if (items.length === 0) return null;
 
   return (
-    <section className={cn('py-8 border-t border-border', className)}>
+    <section className={cn('py-8 ', className)}>
       {title ? (
         <h2 className="text-sm uppercase tracking-widest text-muted-foreground mb-4">
           {title}

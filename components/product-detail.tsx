@@ -49,7 +49,6 @@ function ProductImageCarousel({
   priority = false,
   className,
   showControls = false,
-  centered = false,
 }: {
   productName: string;
   displayImages: string[];
@@ -60,19 +59,15 @@ function ProductImageCarousel({
   priority?: boolean;
   className?: string;
   showControls?: boolean;
-  centered?: boolean;
 }) {
   return (
-    <div className={cn("relative group", className)}>
-      <div className="aspect-square relative bg-secondary overflow-hidden">
+    <div className={cn("relative group w-full", className)}>
+      <div className="aspect-square relative bg-secondary overflow-hidden w-full">
         <Image
           src={displayImages[currentImageIndex]}
           alt={productName}
           fill
-          className={cn(
-            "transition-opacity duration-500",
-            centered ? "object-contain object-center" : "object-cover",
-          )}
+          className="object-cover object-center transition-opacity duration-500"
           sizes="(max-width: 768px) 100vw, 50vw"
           priority={priority}
         />
@@ -336,13 +331,8 @@ export function ProductDetail({
       </div>
 
       {/* Mobile: image-first */}
-      <div className="md:hidden relative flex items-center justify-center min-h-[calc(100dvh-var(--mobile-header-height)-5.5rem)] px-4 pb-20">
-        <ProductImageCarousel
-          {...imageCarouselProps}
-          showControls
-          centered
-          className="w-full max-w-md mx-auto"
-        />
+      <div className="md:hidden relative w-full pb-20">
+        <ProductImageCarousel {...imageCarouselProps} showControls />
 
         <button
           type="button"
@@ -375,7 +365,7 @@ export function ProductDetail({
       </section>
 
       <Drawer open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-        <DrawerContent className="max-h-[88vh] px-4">
+        <DrawerContent className="max-h-[78vh] px-4">
           <DrawerHeader className="border-b border-border py-4">
             <DrawerTitle className="text-left text-sm flex items-center justify-between uppercase tracking-widest font-medium">
               Details
